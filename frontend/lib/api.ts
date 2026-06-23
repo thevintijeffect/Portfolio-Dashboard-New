@@ -1,1 +1,15 @@
+import type { DashboardResponse } from "./types";
 
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+export async function fetchDashboard(): Promise<DashboardResponse> {
+  const res = await fetch(`${API}/api/portfolio/dashboard`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch dashboard: ${res.status}`);
+  }
+
+  return res.json();
+}
