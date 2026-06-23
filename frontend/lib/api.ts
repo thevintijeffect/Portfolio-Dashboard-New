@@ -1,4 +1,4 @@
-import type { DashboardResponse } from "@/types";
+import type { DashboardResponse } from "@/lib/types";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
