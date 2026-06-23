@@ -88,3 +88,13 @@ def dashboard():
             "fx_source": "manual_fallback",
         },
     }
+    
+    @router.get("/api/debug/raw")
+def debug_raw():
+    sheets = SheetsIngestion()
+    return {
+        "cash": sheets.get_cash(),
+        "shares": sheets.get_shares(),
+        "mfs": sheets.get_mutual_funds(),
+        "gold": sheets.get_gold(),
+    }
