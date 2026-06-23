@@ -64,8 +64,8 @@ export type AssetClassBreakdown = {
 
 export type DashboardResponse = {
   summary: Summary;
-  allocation: Record<string, number> | AllocationItem[];
-  currency_exposure: Record<string, number> | ExposureItem[];
+  allocation: AllocationItem[];
+  currency_exposure: ExposureItem[];
   top_holdings?: Array<{
     asset: string;
     value_sgd: number;
@@ -77,9 +77,4 @@ export type DashboardResponse = {
   history?: { date: string; networth_sgd: number }[];
   fx_rates: Record<string, number | null>;
   fx_source: string;
-  meta?: {
-    last_refresh: string;
-    base_currency: string;
-    fx_source: string;
-  };
 };
