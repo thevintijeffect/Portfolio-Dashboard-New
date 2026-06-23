@@ -1,11 +1,12 @@
 from fastapi import APIRouter
+from datetime import datetime, timezone
+
 from app.sheets.ingestion import SheetsIngestion
 from app.analytics.allocation import compute_allocation
 from app.analytics.exposure import compute_exposure
 from app.analytics.concentration import compute_concentration
 from app.portfolio.normalizer import FXNormalizer
 from app.config import settings
-from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api")
 
@@ -21,21 +22,7 @@ def get_fx_rates():
         "HKD": 0.17,
     }
 
-@router.get("/health")
-def health():
-    return {"status": "ok"}
-
-@router.get("/fx/rates")
-def fx_rates():
-    return {
-        "source": "manual_fallback",
-        "base_currency": "SGD",
-        "rates": get_fx_rates(),
-        "last_updated": datetime.now(timezone.utc).isoformat(),
-    }
-
-@router.get("/portfolio/dashboard")
-def dashboard():
+def build_dashboard_payload():
     sheets = SheetsIngestion()
     fx = FXNormalizer(get_fx_rates())
 
@@ -45,8 +32,8 @@ def dashboard():
     gold = sheets.get_gold()
 
     raw_holdings = shares + mfs + gold
-
     holdings = [fx.normalize_holding(h) for h in raw_holdings]
+
     total_value = sum(h["value_sgd"] for h in holdings)
     total_cost = sum(h["cost_sgd"] for h in holdings)
     total_pnl = total_value - total_cost
@@ -88,8 +75,25 @@ def dashboard():
             "fx_source": "manual_fallback",
         },
     }
-    
-    @router.get("/api/debug/raw")
+
+@router.get("/health")
+def health():
+    return {"status": "ok"}
+
+@router.get("/fx/rates")
+def fx_rates():
+    return {
+        "source": "manual_fallback",
+        "base_currency": "SGD",
+        "rates": get_fx_rates(),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
+    }
+
+@router.get("/portfolio/dashboard")
+def dashboard():
+    return build_dashboard_payload()
+
+@router.get("/debug/raw")
 def debug_raw():
     sheets = SheetsIngestion()
     return {
@@ -97,4 +101,19 @@ def debug_raw():
         "shares": sheets.get_shares(),
         "mfs": sheets.get_mutual_funds(),
         "gold": sheets.get_gold(),
+    }
+
+@router.get("/debug/normalized")
+def debug_normalized():
+    sheets = SheetsIngestion()
+    fx = FXNormalizer(get_fx_rates())
+
+    raw_holdings = sheets.get_shares() + sheets.get_mutual_funds() + sheets.get_gold()
+    normalized = [fx.normalize_holding(h) for h in raw_holdings]
+
+    return {
+        "holdings": normalized,
+        "count": len(normalized),
+        "total_value_sgd": round(sum(h["value_sgd"] for h in normalized), 2),
+        "total_cost_sgd": round(sum(h["cost_sgd"] for h in normalized), 2),
     }
