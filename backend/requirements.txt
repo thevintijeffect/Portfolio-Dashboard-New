@@ -2,6 +2,6 @@ fastapi
 uvicorn[standard]
 gspread
 google-auth
-httpx
-pydantic
+requests
+pandas
 python-dotenv
