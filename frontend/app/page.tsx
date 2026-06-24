@@ -13,10 +13,11 @@ import { fetchDashboard } from "@/lib/api";
 import { fmtSGD, fmtPct, fmtDateTime } from "@/lib/formatters";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
+import type { DashboardResponse } from "@/lib/types";
 
 export default function Page() {
   const [page, setPage] = useState("overview");
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
@@ -26,8 +27,8 @@ export default function Page() {
       setError("");
       const res = await fetchDashboard();
       setData(res);
-    } catch (e: any) {
-      setError(e.message || "Failed to load");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -80,7 +81,7 @@ export default function Page() {
                     </div>
                   </div>
                   <MiniSparkline
-                    data={data.history?.length ? data.history.map((h: any) => h.networth_sgd) : [1, 2, 3, 4, 5]}
+                    data={data.history?.length ? data.history.map((h) => h.networth_sgd) : [1, 2, 3, 4, 5]}
                   />
                 </div>
               </GlowCard>
@@ -104,7 +105,7 @@ export default function Page() {
                     {[
                       { label: "Top 5 Holdings", value: data.concentration.top5_pct },
                       { label: "Top 10 Holdings", value: data.concentration.top10_pct },
-                    ].map((c: any) => (
+                    ].map((c) => (
                       <div key={c.label}>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                           <span style={{ color: "var(--text-dim)" }}>{c.label}</span>
@@ -113,7 +114,14 @@ export default function Page() {
                           </span>
                         </div>
                         <div style={{ height: 6, background: "var(--border)", borderRadius: 3 }}>
-                          <div style={{ width: `${c.value}%`, height: "100%", background: c.value > 50 ? "var(--gold)" : "var(--green)", borderRadius: 3 }} />
+                          <div
+                            style={{
+                              width: `${c.value}%`,
+                              height: "100%",
+                              background: c.value > 50 ? "var(--gold)" : "var(--green)",
+                              borderRadius: 3,
+                            }}
+                          />
                         </div>
                       </div>
                     ))}
@@ -121,12 +129,15 @@ export default function Page() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
                       <GlowCard>
                         <div style={{ fontSize: 11, color: "var(--text-dim)", textTransform: "uppercase" }}>HHI Score</div>
-                        <div style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)" }}>{data.concentration.hhi.toFixed(3)}</div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)" }}>
+                          {data.concentration.hhi.toFixed(3)}
+                        </div>
                       </GlowCard>
                       <GlowCard>
                         <div style={{ fontSize: 11, color: "var(--text-dim)", textTransform: "uppercase" }}>Div. Score</div>
                         <div style={{ fontSize: 22, fontWeight: 700, color: "var(--green)" }}>
-                          {data.concentration.diversification_score}<span style={{ fontSize: 14 }}>/100</span>
+                          {data.concentration.diversification_score}
+                          <span style={{ fontSize: 14 }}>/100</span>
                         </div>
                       </GlowCard>
                     </div>
@@ -137,7 +148,7 @@ export default function Page() {
               <GlowCard>
                 <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Largest Holdings</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {data.holdings.slice(0, 5).map((h: any, i: number) => (
+                  {data.holdings.slice(0, 5).map((h, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div
                         style={{
@@ -164,11 +175,25 @@ export default function Page() {
                           <span style={{ fontWeight: 700, fontFamily: "monospace" }}>{fmtSGD(h.value_sgd)}</span>
                         </div>
                         <div style={{ height: 5, background: "var(--border)", borderRadius: 3 }}>
-                          <div style={{ height: "100%", width: `${Math.min(h.weight_pct * 6, 100)}%`, background: "var(--accent)", borderRadius: 3 }} />
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${Math.min(h.weight_pct * 6, 100)}%`,
+                              background: "var(--accent)",
+                              borderRadius: 3,
+                            }}
+                          />
                         </div>
                       </div>
 
-                      <span style={{ color: h.pnl_pct >= 0 ? "var(--green)" : "var(--red)", fontFamily: "monospace", minWidth: 52, textAlign: "right" }}>
+                      <span
+                        style={{
+                          color: h.pnl_pct >= 0 ? "var(--green)" : "var(--red)",
+                          fontFamily: "monospace",
+                          minWidth: 52,
+                          textAlign: "right",
+                        }}
+                      >
                         {fmtPct(h.pnl_pct)}
                       </span>
                     </div>
