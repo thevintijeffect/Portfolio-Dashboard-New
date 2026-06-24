@@ -102,12 +102,14 @@ export default function Page() {
             <StatCard label="Total P&L" value={fmtSGD(data.summary.total_pnl_sgd)} sub={fmtPct(data.summary.pnl_pct)} color="var(--green)" />
           </div>
 
-          <GlowCard style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 16, fontWeight: 700 }}>Cards restored successfully</div>
-            <div style={{ marginTop: 8, color: "var(--text-dim)" }}>
-              Sidebar, Topbar, GlowCard, and StatCard are now working.
-            </div>
-          </GlowCard>
+          <div style={{ marginTop: 20 }}>
+            <GlowCard>
+              <div style={{ fontSize: 16, fontWeight: 700 }}>Cards restored successfully</div>
+              <div style={{ marginTop: 8, color: "var(--text-dim)" }}>
+                Sidebar, Topbar, GlowCard, and StatCard are now working.
+              </div>
+            </GlowCard>
+          </div>
         </div>
       </main>
     </div>
