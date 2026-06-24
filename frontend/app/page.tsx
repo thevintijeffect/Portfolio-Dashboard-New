@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
+import GlowCard from "@/components/cards/GlowCard";
+import StatCard from "@/components/cards/StatCard";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
 import { fetchDashboard } from "@/lib/api";
-import { fmtDateTime } from "@/lib/formatters";
+import { fmtDateTime, fmtSGD, fmtPct } from "@/lib/formatters";
 import type { DashboardResponse } from "@/lib/types";
 
 const emptyData: DashboardResponse = {
@@ -93,10 +95,19 @@ export default function Page() {
         />
 
         <div style={{ padding: 24 }}>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>Dashboard shell restored</div>
-          <div style={{ marginTop: 8, color: "var(--text-dim)" }}>
-            Sidebar and Topbar are working. Next, restore cards and charts one by one.
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+            <StatCard label="Cash" value={fmtSGD(data.summary.cash_sgd)} sub="Liquid reserves" color="var(--purple)" />
+            <StatCard label="Invested" value={fmtSGD(data.summary.invested_sgd)} sub="Market value" color="var(--accent)" />
+            <StatCard label="Total Cost" value={fmtSGD(data.summary.total_cost_sgd)} sub="Capital deployed" color="var(--text-dim)" />
+            <StatCard label="Total P&L" value={fmtSGD(data.summary.total_pnl_sgd)} sub={fmtPct(data.summary.pnl_pct)} color="var(--green)" />
           </div>
+
+          <GlowCard style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>Cards restored successfully</div>
+            <div style={{ marginTop: 8, color: "var(--text-dim)" }}>
+              Sidebar, Topbar, GlowCard, and StatCard are now working.
+            </div>
+          </GlowCard>
         </div>
       </main>
     </div>
