@@ -8,6 +8,7 @@ import StatCard from "@/components/cards/StatCard";
 import MiniSparkline from "@/components/charts/MiniSparkline";
 import AllocationDonut from "@/components/charts/AllocationDonut";
 import ExposureBar from "@/components/charts/ExposureBar";
+import HoldingsTable from "@/components/tables/HoldingsTable";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
 import { fetchDashboard } from "@/lib/api";
@@ -101,7 +102,7 @@ export default function Page() {
           lastRefresh={data.meta.last_refresh ? fmtDateTime(data.meta.last_refresh) : "—"}
         />
 
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
             <StatCard label="Cash" value={fmtSGD(data.summary.cash_sgd)} sub="Liquid reserves" color="var(--purple)" />
             <StatCard label="Invested" value={fmtSGD(data.summary.invested_sgd)} sub="Market value" color="var(--accent)" />
@@ -109,7 +110,7 @@ export default function Page() {
             <StatCard label="Total P&L" value={fmtSGD(data.summary.total_pnl_sgd)} sub={fmtPct(data.summary.pnl_pct)} color="var(--green)" />
           </div>
 
-          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
             <GlowCard>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                 <div>
@@ -136,7 +137,7 @@ export default function Page() {
             </GlowCard>
           </div>
 
-          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
             <GlowCard>
               <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Currency Exposure</div>
               <ExposureBar data={data.currency_exposure} />
@@ -147,6 +148,11 @@ export default function Page() {
               <ExposureBar data={data.country_exposure} />
             </GlowCard>
           </div>
+
+          <GlowCard>
+            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Holdings</div>
+            <HoldingsTable holdings={data.holdings} />
+          </GlowCard>
         </div>
       </main>
     </div>
