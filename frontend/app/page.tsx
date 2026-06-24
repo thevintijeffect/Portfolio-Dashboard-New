@@ -5,6 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
 import GlowCard from "@/components/cards/GlowCard";
 import StatCard from "@/components/cards/StatCard";
+import MiniSparkline from "@/components/charts/MiniSparkline";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
 import { fetchDashboard } from "@/lib/api";
@@ -83,6 +84,10 @@ export default function Page() {
   if (loading) return <LoadingState />;
   if (error) return <ErrorState message={error} />;
 
+  const sparkData = Array.isArray(data.history) && data.history.length
+    ? data.history.map((h) => h.networth_sgd)
+    : [1, 2, 3, 4, 5];
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
       <Sidebar page={page} setPage={setPage} />
@@ -104,9 +109,22 @@ export default function Page() {
 
           <div style={{ marginTop: 20 }}>
             <GlowCard>
-              <div style={{ fontSize: 16, fontWeight: 700 }}>Cards restored successfully</div>
-              <div style={{ marginTop: 8, color: "var(--text-dim)" }}>
-                Sidebar, Topbar, GlowCard, and StatCard are now working.
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontSize: 12, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                    Total Net Worth · SGD
+                  </div>
+                  <div style={{ fontSize: 36, fontWeight: 800, lineHeight: 1.1 }}>
+                    {fmtSGD(data.summary.networth_sgd)}
+                  </div>
+                  <div style={{ marginTop: 8, color: "var(--green)" }}>
+                    {fmtPct(data.summary.pnl_pct)} total return
+                  </div>
+                </div>
+
+                <div style={{ minWidth: 160 }}>
+                  <MiniSparkline data={sparkData} />
+                </div>
               </div>
             </GlowCard>
           </div>
