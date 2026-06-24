@@ -1,29 +1,39 @@
 "use client";
 
-export default function MiniSparkline({ data }: { data: number[] }) {
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const norm = data.map((v) => ((v - min) / (max - min)) * 48);
-  const w = 120;
-  const h = 52;
-  const points = norm.map((y, i) => `${(i / (data.length - 1)) * w},${h - y - 2}`).join(" ");
+type Props = {
+  data?: number[];
+};
+
+export default function MiniSparkline({ data = [] }: Props) {
+  const values = Array.isArray(data) ? data : [];
+  if (!values.length) {
+    return <div style={{ height: 60, display: "flex", alignItems: "center" }}>No data</div>;
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const width = 160;
+  const height = 60;
+  const pad = 4;
+
+  const points = values.map((v, i) => {
+    const x = values.length === 1 ? width / 2 : (i / (values.length - 1)) * (width - pad * 2) + pad;
+    const y =
+      max === min
+        ? height / 2
+        : height - pad - ((v - min) / (max - min)) * (height - pad * 2);
+    return `${x},${y}`;
+  });
 
   return (
-    <svg width={w} height={h} style={{ display: "block" }}>
-      <defs>
-        <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.3} />
-          <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <polygon points={`0,${h} ${points} ${w},${h}`} fill="url(#sg)" />
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       <polyline
-        points={points}
         fill="none"
         stroke="var(--accent)"
-        strokeWidth={2}
-        strokeLinejoin="round"
+        strokeWidth="2"
         strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points.join(" ")}
       />
     </svg>
   );
