@@ -7,6 +7,7 @@ import GlowCard from "@/components/cards/GlowCard";
 import StatCard from "@/components/cards/StatCard";
 import MiniSparkline from "@/components/charts/MiniSparkline";
 import AllocationDonut from "@/components/charts/AllocationDonut";
+import ExposureBar from "@/components/charts/ExposureBar";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
 import { fetchDashboard } from "@/lib/api";
@@ -132,6 +133,18 @@ export default function Page() {
             <GlowCard>
               <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Asset Allocation</div>
               <AllocationDonut data={data.allocation} />
+            </GlowCard>
+          </div>
+
+          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <GlowCard>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Currency Exposure</div>
+              <ExposureBar data={data.currency_exposure} />
+            </GlowCard>
+
+            <GlowCard>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Country Exposure</div>
+              <ExposureBar data={data.country_exposure} />
             </GlowCard>
           </div>
         </div>
