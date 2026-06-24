@@ -6,6 +6,7 @@ import TopBar from "@/components/layout/TopBar";
 import GlowCard from "@/components/cards/GlowCard";
 import StatCard from "@/components/cards/StatCard";
 import MiniSparkline from "@/components/charts/MiniSparkline";
+import AllocationDonut from "@/components/charts/AllocationDonut";
 import LoadingState from "@/components/ui/LoadingState";
 import ErrorState from "@/components/ui/ErrorState";
 import { fetchDashboard } from "@/lib/api";
@@ -107,7 +108,7 @@ export default function Page() {
             <StatCard label="Total P&L" value={fmtSGD(data.summary.total_pnl_sgd)} sub={fmtPct(data.summary.pnl_pct)} color="var(--green)" />
           </div>
 
-          <div style={{ marginTop: 20 }}>
+          <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
             <GlowCard>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                 <div>
@@ -126,6 +127,11 @@ export default function Page() {
                   <MiniSparkline data={sparkData} />
                 </div>
               </div>
+            </GlowCard>
+
+            <GlowCard>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Asset Allocation</div>
+              <AllocationDonut data={data.allocation} />
             </GlowCard>
           </div>
         </div>
